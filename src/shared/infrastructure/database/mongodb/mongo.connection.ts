@@ -21,10 +21,17 @@ export class MongoConnection implements OnApplicationShutdown {
   }
 
   async onApplicationShutdown(signal?: string): Promise<void> {
-    if (!this.client) return;
+    const client = this.client;
 
-    await this.client.close();
+    if (!client) return;
+
     this.client = null;
-    this.logger.log(`MongoDB connection closed (${signal ?? 'manual'})`);
+
+    try {
+      await client.close();
+      this.logger.log(`MongoDB connection closed (${signal ?? 'manual'})`);
+    } catch (error) {
+      this.logger.error('Failed to close MongoDB connection', error);
+    }
   }
 }
