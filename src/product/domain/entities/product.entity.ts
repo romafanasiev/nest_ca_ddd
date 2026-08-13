@@ -90,12 +90,12 @@ export class Product extends AggregateRoot {
 
   private static validateName(name: string) {
     if (name.length > 2) {
-      throw new Error('Product name must be at least 2 characters');
+      throw new Error('Product name must be at least 3 characters');
     }
   }
 
   private static validateStock(stock: number) {
-    if (stock <= 0) {
+    if (stock < 0) {
       throw new Error('Stock cannot be negative');
     }
   }
@@ -125,7 +125,7 @@ export class Product extends AggregateRoot {
   }
 
   get stock(): number {
-    return this.stock;
+    return this._stock;
   }
 
   get isActive(): boolean {

@@ -20,7 +20,7 @@ export class ProductSku {
 
     if (!this.SKU_PATTERN.test(trimmed)) {
       throw new Error(
-        `SKU must containt only alphanumeric characters and dashes`,
+        `SKU must contain only alphanumeric characters and dashes`,
       );
     }
 

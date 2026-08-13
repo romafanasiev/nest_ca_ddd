@@ -6,10 +6,12 @@ import {
 } from 'src/product/application/ports/product.repository.port';
 import { Product } from 'src/product/domain/entities/product.entity';
 import { ProductId } from 'src/product/domain/value-objects/product-id.vo';
-import { ProductSku } from 'src/product/domain/value-objects/product-sku.vo';
+import { ProductMapper } from 'src/product/infrastructure/mappers/product.mapper';
 import { Money } from 'src/shared/domain/value-objects/money.vo';
-import type { DrizzleDB } from 'src/shared/infrastructure/database/postgres/drizzle.connection';
-import { DRIZZLE } from 'src/shared/infrastructure/database/postgres/drizzle.provider';
+import {
+  DRIZZLE,
+  type DrizzleDB,
+} from 'src/shared/infrastructure/database/postgres/drizzle.provider';
 import { products } from 'src/shared/infrastructure/database/postgres/schema';
 
 @Injectable()
@@ -17,25 +19,14 @@ export class DrizzleProductRepository implements ProductRepository {
   constructor(@Inject(DRIZZLE) private readonly db: DrizzleDB) {}
 
   async save(product: Product): Promise<void> {
-    const row = DrizzleProductRepository.toPersistence(product);
+    const row = ProductMapper.toPersistence(product);
+
+    const { id, createdAt, ...updatable } = row;
 
     await this.db
       .insert(products)
       .values(row)
-      .onConflictDoUpdate({
-        target: products.id,
-        set: {
-          name: row.name,
-          description: row.description,
-          sku: row.sku,
-          priceAmount: row.priceAmount,
-          priceCurrency: row.priceCurrency,
-          stock: row.stock,
-          isActive: row.isActive,
-          lowStockThreshold: row.lowStockThreshold,
-          updatedAt: row.updatedAt,
-        },
-      });
+      .onConflictDoUpdate({ target: products.id, set: updatable });
   }
 
   async findById(id: ProductId): Promise<Product | null> {
@@ -46,10 +37,10 @@ export class DrizzleProductRepository implements ProductRepository {
 
     if (rows.length === 0) return null;
 
-    return DrizzleProductRepository.toDomain(rows[0]);
+    return ProductMapper.toDomain(rows[0]);
   }
 
-  async findAll(filters: ProductFilters): Promise<Product[]> {
+  async findAll(filters?: ProductFilters): Promise<Product[]> {
     const conditions: SQL[] = [];
 
     if (filters?.isActive !== undefined) {
@@ -57,12 +48,14 @@ export class DrizzleProductRepository implements ProductRepository {
     }
 
     if (filters?.minPrice !== undefined) {
-      conditions.push(gte(products.priceAmount, filters.minPrice));
+      conditions.push(
+        gte(products.priceAmount, Money.create(filters.minPrice).toCents()),
+      );
     }
 
-    if (filters?.maxPrice) {
+    if (filters?.maxPrice !== undefined) {
       conditions.push(
-        lte(products.priceAmount, Math.round(filters?.maxPrice * 100)),
+        lte(products.priceAmount, Money.create(filters.maxPrice).toCents()),
       );
     }
 
@@ -73,37 +66,6 @@ export class DrizzleProductRepository implements ProductRepository {
         ? await query.where(and(...conditions))
         : await query;
 
-    return productRows.map((row) => DrizzleProductRepository.toDomain(row));
-  }
-
-  private static toPersistence(product: Product): typeof products.$inferSelect {
-    return {
-      id: product.id.getValue(),
-      name: product.name,
-      description: product.description,
-      sku: product.sku.getValue(),
-      priceAmount: product.price.toCents(),
-      priceCurrency: product.price.getCurrency(),
-      stock: product.stock,
-      isActive: product.isActive,
-      lowStockThreshold: product.lowStockThreshold,
-      createdAt: product.createdAt,
-      updatedAt: product.updatedAt,
-    };
-  }
-
-  private static toDomain(row: typeof products.$inferSelect): Product {
-    return Product.reconstitute({
-      id: new ProductId(row.id),
-      name: row.name,
-      description: row.description,
-      sku: ProductSku.create(row.sku),
-      price: Money.create(row.priceAmount / 100, row.priceCurrency),
-      stock: row.stock,
-      isActive: row.isActive,
-      lowStockThreshold: row.lowStockThreshold,
-      createdAt: row.createdAt,
-      updatedAt: row.updatedAt,
-    });
+    return productRows.map((row) => ProductMapper.toDomain(row));
   }
 }

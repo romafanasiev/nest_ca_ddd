@@ -12,5 +12,5 @@ export interface ProductFilters {
 export interface ProductRepository {
   save(product: Product): Promise<void>;
   findById(id: ProductId): Promise<Product | null>;
-  findAll(filters: ProductFilters): Promise<Product[]>;
+  findAll(filters?: ProductFilters): Promise<Product[]>;
 }
