@@ -1,4 +1,4 @@
-import { Product } from 'src/product/domain/entitites/product.entity';
+import { Product } from 'src/product/domain/entities/product.entity';
 import { ProductId } from 'src/product/domain/value-objects/product-id.vo';
 
 export const PRODUCT_REPOSITORY = Symbol('PRODUCT_REPOSITORY');
