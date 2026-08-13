@@ -2,8 +2,9 @@ import { Injectable, Logger, OnApplicationShutdown } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import postgres, { type Sql } from 'postgres';
+import * as schema from './schema';
 
-export type DrizzleDB = PostgresJsDatabase;
+export type DrizzleDB = PostgresJsDatabase<typeof schema>;
 
 @Injectable()
 export class DrizzleConnection implements OnApplicationShutdown {
@@ -18,7 +19,7 @@ export class DrizzleConnection implements OnApplicationShutdown {
     );
 
     this.client = postgres(connectionString);
-    const db = drizzle(this.client, {});
+    const db = drizzle(this.client, { schema });
 
     this.logger.log('Connected to PostgreSQL');
 
