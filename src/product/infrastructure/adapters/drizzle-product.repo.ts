@@ -6,6 +6,7 @@ import {
 } from 'src/product/application/ports/product.repository.port';
 import { Product } from 'src/product/domain/entities/product.entity';
 import { ProductId } from 'src/product/domain/value-objects/product-id.vo';
+import { ProductSku } from 'src/product/domain/value-objects/product-sku.vo';
 import { ProductMapper } from 'src/product/infrastructure/mappers/product.mapper';
 import { Money } from 'src/shared/domain/value-objects/money.vo';
 import {
@@ -34,6 +35,28 @@ export class DrizzleProductRepository implements ProductRepository {
       .select()
       .from(products)
       .where(eq(products.id, id.getValue()));
+
+    if (rows.length === 0) return null;
+
+    return ProductMapper.toDomain(rows[0]);
+  }
+
+  async findByName(name: string): Promise<Product | null> {
+    const rows = await this.db
+      .select()
+      .from(products)
+      .where(eq(products.name, name));
+
+    if (rows.length === 0) return null;
+
+    return ProductMapper.toDomain(rows[0]);
+  }
+
+  async findBySku(sku: ProductSku): Promise<Product | null> {
+    const rows = await this.db
+      .select()
+      .from(products)
+      .where(eq(products.sku, sku.getValue()));
 
     if (rows.length === 0) return null;
 
