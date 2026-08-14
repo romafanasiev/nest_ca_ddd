@@ -1,3 +1,5 @@
+import { DomainException } from '../exceptions/domain.exception';
+
 export class Money {
   private constructor(
     private readonly amount: number,
@@ -6,7 +8,7 @@ export class Money {
 
   static create(amount: number, currency: string = 'USD'): Money {
     if (amount < 0) {
-      throw new Error('Money amount cannot be negative');
+      throw new DomainException('Money amount cannot be negative');
     }
 
     const normalized = Math.round(amount * 100) / 100;
@@ -16,7 +18,7 @@ export class Money {
 
   static fromCents(cents: number, currency: string = 'USD'): Money {
     if (!Number.isInteger(cents)) {
-      throw new Error('Money cents must be an integer');
+      throw new DomainException('Money cents must be an integer');
     }
 
     return Money.create(cents / 100, currency);

@@ -1,3 +1,5 @@
+import { DomainException } from 'src/shared/domain/exceptions/domain.exception';
+
 export class ProductSku {
   private static readonly SKU_PATTERN = /^[A-Za-z0-9-]+$/;
   private static readonly MIN_LENGTH = 3;
@@ -19,7 +21,7 @@ export class ProductSku {
     }
 
     if (!this.SKU_PATTERN.test(trimmed)) {
-      throw new Error(
+      throw new DomainException(
         `SKU must contain only alphanumeric characters and dashes`,
       );
     }
