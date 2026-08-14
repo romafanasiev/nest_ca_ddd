@@ -8,13 +8,16 @@ import {
 import { ListProductsQuery } from '../list-products.query';
 
 @QueryHandler(ListProductsQuery)
-export class ListProductsHandler implements IQueryHandler<ListProductsQuery> {
+export class ListProductsHandler implements IQueryHandler<
+  ListProductsQuery,
+  Product[]
+> {
   constructor(
     @Inject(PRODUCT_REPOSITORY)
     private readonly productRepository: ProductRepository,
   ) {}
 
-  async execute(query: ListProductsQuery): Promise<Product[]> {
+  async execute(query: ListProductsQuery) {
     return this.productRepository.findAll({
       isActive: query.isActive,
       minPrice: query.minPrice,

@@ -13,13 +13,16 @@ import {
 import { CreateProductCommand } from './create-product.command';
 
 @CommandHandler(CreateProductCommand)
-export class CreateProductHandler implements ICommandHandler<CreateProductCommand> {
+export class CreateProductHandler implements ICommandHandler<
+  CreateProductCommand,
+  void
+> {
   constructor(
     @Inject(PRODUCT_REPOSITORY)
     private readonly productRepository: ProductRepository,
   ) {}
 
-  async execute(command: CreateProductCommand): Promise<void> {
+  async execute(command: CreateProductCommand) {
     const existingSku = await this.productRepository.findBySku(
       ProductSku.create(command.sku),
     );
