@@ -7,7 +7,7 @@ import {
 import { Product } from 'src/product/domain/entities/product.entity';
 import { ProductId } from 'src/product/domain/value-objects/product-id.vo';
 import { ProductSku } from 'src/product/domain/value-objects/product-sku.vo';
-import { ProductMapper } from 'src/product/infrastructure/mappers/product.mapper';
+import { DrizzleProductMapper } from 'src/product/infrastructure/mappers/drizzle-product.mapper';
 import { Money } from 'src/shared/domain/value-objects/money.vo';
 import {
   DRIZZLE,
@@ -20,7 +20,7 @@ export class DrizzleProductRepository implements ProductRepository {
   constructor(@Inject(DRIZZLE) private readonly db: DrizzleDB) {}
 
   async save(product: Product): Promise<void> {
-    const row = ProductMapper.toPersistence(product);
+    const row = DrizzleProductMapper.toPersistence(product);
 
     const { id, createdAt, ...updatable } = row;
 
@@ -38,7 +38,7 @@ export class DrizzleProductRepository implements ProductRepository {
 
     if (rows.length === 0) return null;
 
-    return ProductMapper.toDomain(rows[0]);
+    return DrizzleProductMapper.toDomain(rows[0]);
   }
 
   async findByName(name: string): Promise<Product | null> {
@@ -49,7 +49,7 @@ export class DrizzleProductRepository implements ProductRepository {
 
     if (rows.length === 0) return null;
 
-    return ProductMapper.toDomain(rows[0]);
+    return DrizzleProductMapper.toDomain(rows[0]);
   }
 
   async findBySku(sku: ProductSku): Promise<Product | null> {
@@ -60,7 +60,7 @@ export class DrizzleProductRepository implements ProductRepository {
 
     if (rows.length === 0) return null;
 
-    return ProductMapper.toDomain(rows[0]);
+    return DrizzleProductMapper.toDomain(rows[0]);
   }
 
   async findAll(filters?: ProductFilters): Promise<Product[]> {
@@ -89,7 +89,7 @@ export class DrizzleProductRepository implements ProductRepository {
         ? await query.where(and(...conditions))
         : await query;
 
-    return productRows.map((row) => ProductMapper.toDomain(row));
+    return productRows.map((row) => DrizzleProductMapper.toDomain(row));
   }
 
   async deleteById(id: ProductId): Promise<void> {

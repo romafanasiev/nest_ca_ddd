@@ -18,6 +18,8 @@ export interface ProductProps {
 }
 
 export class Product extends AggregateRoot {
+  static readonly DEFAULT_LOW_STOCK_THRESHOLD = 5;
+
   private _id: ProductId;
   private _name: string;
   private _description: string;
@@ -85,7 +87,7 @@ export class Product extends AggregateRoot {
       price: Money.create(price, currency),
       stock,
       isActive: true,
-      lowStockThreshold: 5,
+      lowStockThreshold: Product.DEFAULT_LOW_STOCK_THRESHOLD,
       createdAt: defaultDate,
       updatedAt: defaultDate,
     });

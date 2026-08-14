@@ -68,7 +68,7 @@ export class ProductsController {
 
   @Delete(':id')
   async remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    await this.commandBus.execute<DeleteProductCommand, Product>(
+    await this.commandBus.execute<DeleteProductCommand, void>(
       new DeleteProductCommand(id),
     );
   }

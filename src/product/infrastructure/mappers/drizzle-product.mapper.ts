@@ -7,7 +7,7 @@ import { products } from 'src/shared/infrastructure/database/postgres/schema';
 export type ProductRow = typeof products.$inferSelect;
 export type ProductInsert = typeof products.$inferInsert;
 
-export class ProductMapper {
+export class DrizzleProductMapper {
   static toPersistence(product: Product): ProductInsert {
     return {
       id: product.id.getValue(),
