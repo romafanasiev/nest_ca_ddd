@@ -91,8 +91,8 @@ export class Product extends AggregateRoot {
   }
 
   private static validateName(name: string) {
-    if (name.length > 2) {
-      throw new Error('Product name must be at least 3 characters');
+    if (name.length < 2) {
+      throw new Error('Product name must be at least 2 characters');
     }
   }
 
