@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -9,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { CreateProductCommand } from '../application/commands/create-product/create-product.command';
+import { DeleteProductCommand } from '../application/commands/delete-product/delete-product.command';
 import { GetProductQuery } from '../application/queries/get-product.query';
 import { ListProductsQuery } from '../application/queries/list-products.query';
 import { Product } from '../domain/entities/product.entity';
@@ -62,5 +64,12 @@ export class ProductsController {
     );
 
     return ProductResponseDto.fromDomain(product);
+  }
+
+  @Delete(':id')
+  async remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    await this.commandBus.execute<DeleteProductCommand, Product>(
+      new DeleteProductCommand(id),
+    );
   }
 }

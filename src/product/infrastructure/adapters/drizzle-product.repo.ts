@@ -91,4 +91,8 @@ export class DrizzleProductRepository implements ProductRepository {
 
     return productRows.map((row) => ProductMapper.toDomain(row));
   }
+
+  async deleteById(id: ProductId): Promise<void> {
+    await this.db.delete(products).where(eq(products.id, id.getValue()));
+  }
 }
