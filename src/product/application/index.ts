@@ -1,3 +1,3 @@
-import { CreateProductHandler } from './use-cases/create-product/create-product-handler';
+import { CreateProductHandler } from './commands/create-product/create-product-handler';
 
 export const CommandHandlers = [CreateProductHandler];
