@@ -44,7 +44,7 @@ export class Customer extends AggregateRoot {
     email: Email;
     firstName: string;
     lastName: string;
-    phone: string;
+    phone?: string | null;
   }): Customer {
     const id = new CustomerId();
     const now = new Date();
@@ -55,7 +55,7 @@ export class Customer extends AggregateRoot {
       firstName,
       lastName,
       isActive: true,
-      phone,
+      phone: phone ?? null,
       createdAt: now,
       updatedAt: now,
     });
