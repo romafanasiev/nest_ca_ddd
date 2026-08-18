@@ -3,6 +3,7 @@ import { CommandHandlers } from './application';
 import { CUSTOMER_REPOSITORY } from './application/ports/customer.repository.port';
 import { NOTIFICATION_SERVICE } from './application/ports/notification.port';
 import { QueryHandlers } from './application/queries/handlers';
+import { EventHandlers } from './domain/events';
 import { ConsoleNotificationAdapter } from './infrastructure/adapters/console-notification.adapter';
 import { DrizzleCustomerRepository } from './infrastructure/adapters/drizzle-customer.repository';
 import { CustomersController } from './presentation/customer.controller';
@@ -11,6 +12,7 @@ import { CustomersController } from './presentation/customer.controller';
   controllers: [CustomersController],
   providers: [
     ...CommandHandlers,
+    ...EventHandlers,
     ...QueryHandlers,
     {
       provide: CUSTOMER_REPOSITORY,

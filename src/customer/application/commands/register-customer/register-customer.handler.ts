@@ -1,5 +1,5 @@
 import { Inject } from '@nestjs/common';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import { Customer } from 'src/customer/domain/entities/customer.entity';
 import { Email } from 'src/customer/domain/value-objects/email.vo';
 import {
@@ -20,6 +20,7 @@ export class RegisterCustomerHandler implements ICommandHandler<
   constructor(
     @Inject(CUSTOMER_REPOSITORY)
     private readonly customerRepository: CustomerRepositoryPort,
+    private readonly eventPublisher: EventPublisher,
   ) {}
 
   async execute(command: RegisterCustomerCommand) {
@@ -34,13 +35,17 @@ export class RegisterCustomerHandler implements ICommandHandler<
       );
     }
 
-    const customer = Customer.register({
-      email,
-      firstName: command.firstName,
-      lastName: command.lastName,
-      phone: command.phone,
-    });
+    const customer = this.eventPublisher.mergeObjectContext(
+      Customer.register({
+        email,
+        firstName: command.firstName,
+        lastName: command.lastName,
+        phone: command.phone,
+      }),
+    );
 
     await this.customerRepository.save(customer);
+
+    customer.commit();
   }
 }
