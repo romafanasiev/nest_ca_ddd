@@ -62,7 +62,7 @@ export class OrderStatus {
   }
 
   canDeliver(): boolean {
-    return this.canTransitionTo('cancelled');
+    return this.canTransitionTo('delivered');
   }
 
   canCancel(): boolean {

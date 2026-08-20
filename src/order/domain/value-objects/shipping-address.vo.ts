@@ -48,10 +48,8 @@ export class ShippingAddress {
       throw new DomainException('Shipping state is required');
     }
 
-    if (!zipCode || zipCode.trim().length === 2) {
-      throw new DomainException(
-        'Shipping zipCode is required and be a valid ISO code',
-      );
+    if (!zipCode || zipCode.trim().length === 0) {
+      throw new DomainException('Shipping zipCode is required');
     }
 
     if (!country || country.trim().length === 0) {
@@ -83,7 +81,7 @@ export class ShippingAddress {
     return this._zipCode;
   }
 
-  get county(): string {
+  get country(): string {
     return this._country;
   }
 
@@ -93,7 +91,7 @@ export class ShippingAddress {
       this.city === other.city &&
       this.state === other.state &&
       this.zipCode === other.zipCode &&
-      this.county === other.county
+      this.country === other.country
     );
   }
 }
