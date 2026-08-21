@@ -102,4 +102,17 @@ export class Money {
       );
     }
   }
+
+  static zero(currency: string = 'USD'): Money {
+    return this.create(0, currency.toUpperCase());
+  }
+
+  add(other: Money): Money {
+    this.assertSameCurrency(other);
+
+    return Money.create(
+      this.getAmount() + other.getAmount(),
+      this.getCurrency(),
+    );
+  }
 }
