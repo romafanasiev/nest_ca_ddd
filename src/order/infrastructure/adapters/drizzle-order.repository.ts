@@ -3,14 +3,8 @@ import { and, eq, notInArray, sql, type SQL } from 'drizzle-orm';
 import { Order } from 'src/order/domain/entities/order.entity';
 import { OrderRepositoryPort } from 'src/order/domain/ports/order.repository.port';
 import { OrderId } from 'src/order/domain/value-objects/order-id.vo';
-import {
-  DrizzleOrderItemMapper,
-  type OrderItemRow,
-} from 'src/order/infrastructure/mappers/drizzle-order-item.mapper';
-import {
-  DrizzleOrderMapper,
-  type OrderRow,
-} from 'src/order/infrastructure/mappers/drizzle-order.mapper';
+import { DrizzleOrderItemMapper } from 'src/order/infrastructure/mappers/drizzle-order-item.mapper';
+import { DrizzleOrderMapper } from 'src/order/infrastructure/mappers/drizzle-order.mapper';
 import {
   DRIZZLE,
   type DrizzleDB,
@@ -94,33 +88,16 @@ export class DrizzleOrderRepository implements OrderRepositoryPort {
   }
 
   private async findMany(where?: SQL): Promise<Order[]> {
-    const query = this.db
-      .select()
-      .from(orders)
-      .leftJoin(orderItems, eq(orderItems.orderId, orders.id));
+    const rows = await this.db.query.orders.findMany({
+      where,
+      with: {
+        items: {
+          orderBy: (item, { asc }) => [asc(item.id)],
+        },
+      },
+      orderBy: (order, { asc }) => [asc(order.createdAt), asc(order.id)],
+    });
 
-    const rows = await (where ? query.where(where) : query).orderBy(
-      orders.createdAt,
-      orders.id,
-      orderItems.id,
-    );
-
-    const grouped = new Map<string, { row: OrderRow; items: OrderItemRow[] }>();
-
-    for (const row of rows) {
-      const orderRow = row.orders;
-      let entry = grouped.get(orderRow.id);
-
-      if (!entry) {
-        entry = { row: orderRow, items: [] };
-        grouped.set(orderRow.id, entry);
-      }
-
-      if (row.order_items) entry.items.push(row.order_items);
-    }
-
-    return [...grouped.values()].map((entry) =>
-      DrizzleOrderMapper.toDomain(entry.row, entry.items),
-    );
+    return rows.map((row) => DrizzleOrderMapper.toDomain(row, row.items));
   }
 }
