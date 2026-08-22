@@ -22,6 +22,13 @@
       "when": 1787393005448,
       "tag": "0002_volatile_loa",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1787393929003,
+      "tag": "0003_organic_pandemic",
+      "breakpoints": true
     }
   ]
 }

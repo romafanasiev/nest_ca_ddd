@@ -36,7 +36,7 @@ export const orders = pgTable('orders', {
   trackingNumber: varchar('tracking_number'),
   notes: text('notes'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
 export const orderItems = pgTable('order_items', {
