@@ -133,4 +133,8 @@ export class Order extends AggregateRoot {
       Money.zero(this._items[0].unitPrice.getCurrency()),
     );
   }
+
+  getItemCount(): number {
+    return this._items.reduce((sum, item) => sum + item.quantity, 0);
+  }
 }
