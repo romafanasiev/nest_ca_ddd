@@ -12,6 +12,7 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetOrderQuery } from '../application/queries/get-order.query';
 import { ListOrdersQuery } from '../application/queries/list-orders.query';
 import { ConfirmOrderCommand } from '../application/use-cases/confirm-order/confirm-order.command';
+import { DeliverOrderCommand } from '../application/use-cases/deliver-order/deliver-order.command';
 import { PlaceOrderCommand } from '../application/use-cases/place-order/place-order.command';
 import { ShipOrderCommand } from '../application/use-cases/ship-order/ship-order.command';
 import { Order } from '../domain/entities/order.entity';
@@ -83,6 +84,13 @@ export class OrderController {
   ): Promise<void> {
     await this.commandBus.execute<ShipOrderCommand, void>(
       new ShipOrderCommand(id, dto.trackingNumber),
+    );
+  }
+
+  @Patch(':id/deliver')
+  async deliver(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    await this.commandBus.execute<DeliverOrderCommand, void>(
+      new DeliverOrderCommand(id),
     );
   }
 }

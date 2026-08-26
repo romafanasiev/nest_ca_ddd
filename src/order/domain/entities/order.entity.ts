@@ -2,6 +2,7 @@ import { DomainException } from 'src/shared/domain/exceptions/domain.exception';
 import { Money } from 'src/shared/domain/value-objects/money.vo';
 import { AggregateRoot } from '../../../shared/domain/aggregate-root';
 import { OrderConfirmedEvent } from '../events/order-confirmed.event';
+import { OrderDeliveredEvent } from '../events/order-delivered.event';
 import { OrderPlacedEvent } from '../events/order-placed.event';
 import { OrderShippedEvent } from '../events/order-shipped.event';
 import { OrderId } from '../value-objects/order-id.vo';
@@ -172,5 +173,12 @@ export class Order extends AggregateRoot {
         this._customerId.toString(),
       ),
     );
+  }
+
+  deliver(): void {
+    this._status = this._status.deliver();
+    this._updatedAt = new Date();
+
+    this.apply(new OrderDeliveredEvent(this._id.getValue(), this._customerId));
   }
 }
