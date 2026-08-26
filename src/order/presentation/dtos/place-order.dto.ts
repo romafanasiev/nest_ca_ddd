@@ -14,7 +14,7 @@ import {
 
 export class PlaceOrderItemDto {
   @IsUUID()
-  productID: string;
+  productId: string;
 
   @IsString()
   @MinLength(1)
