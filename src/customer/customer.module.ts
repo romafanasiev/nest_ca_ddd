@@ -20,6 +20,6 @@ import { CustomersController } from './presentation/customer.controller';
     },
     { provide: NOTIFICATION_SERVICE, useClass: ConsoleNotificationAdapter },
   ],
-  exports: [CUSTOMER_REPOSITORY],
+  exports: [CUSTOMER_REPOSITORY, NOTIFICATION_SERVICE],
 })
 export class CustomerModule {}

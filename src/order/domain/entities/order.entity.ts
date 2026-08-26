@@ -1,6 +1,7 @@
 import { DomainException } from 'src/shared/domain/exceptions/domain.exception';
 import { Money } from 'src/shared/domain/value-objects/money.vo';
 import { AggregateRoot } from '../../../shared/domain/aggregate-root';
+import { OrderPlacedEvent } from '../events/order-placed.event';
 import { OrderId } from '../value-objects/order-id.vo';
 import { OrderStatus } from '../value-objects/order-status.vo';
 import { ShippingAddress } from '../value-objects/shipping-address.vo';
@@ -79,6 +80,8 @@ export class Order extends AggregateRoot {
       createdAt: now,
       updatedAt: now,
     });
+
+    order.apply(new OrderPlacedEvent(id.getValue(), customerId));
 
     return order;
   }
