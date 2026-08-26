@@ -13,9 +13,11 @@ import { GetOrderQuery } from '../application/queries/get-order.query';
 import { ListOrdersQuery } from '../application/queries/list-orders.query';
 import { ConfirmOrderCommand } from '../application/use-cases/confirm-order/confirm-order.command';
 import { PlaceOrderCommand } from '../application/use-cases/place-order/place-order.command';
+import { ShipOrderCommand } from '../application/use-cases/ship-order/ship-order.command';
 import { Order } from '../domain/entities/order.entity';
 import { OrderResponseDto } from './dtos/order-response.dto';
 import { PlaceOrderDto } from './dtos/place-order.dto';
+import { ShipOrderDto } from './dtos/ship-order.dto';
 
 @Controller()
 export class OrderController {
@@ -71,6 +73,16 @@ export class OrderController {
   async confirm(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     await this.commandBus.execute<ConfirmOrderCommand>(
       new ConfirmOrderCommand(id),
+    );
+  }
+
+  @Patch(':id/ship')
+  async ship(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: ShipOrderDto,
+  ): Promise<void> {
+    await this.commandBus.execute<ShipOrderCommand, void>(
+      new ShipOrderCommand(id, dto.trackingNumber),
     );
   }
 }

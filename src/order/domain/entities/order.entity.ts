@@ -3,6 +3,7 @@ import { Money } from 'src/shared/domain/value-objects/money.vo';
 import { AggregateRoot } from '../../../shared/domain/aggregate-root';
 import { OrderConfirmedEvent } from '../events/order-confirmed.event';
 import { OrderPlacedEvent } from '../events/order-placed.event';
+import { OrderShippedEvent } from '../events/order-shipped.event';
 import { OrderId } from '../value-objects/order-id.vo';
 import { OrderStatus } from '../value-objects/order-status.vo';
 import { ShippingAddress } from '../value-objects/shipping-address.vo';
@@ -151,6 +152,24 @@ export class Order extends AggregateRoot {
         this._id.getValue(),
         this.customerId,
         this._shippingAddress,
+      ),
+    );
+  }
+
+  ship(trackingNumber: string): void {
+    if (!trackingNumber || trackingNumber.trim().length === 0) {
+      throw new DomainException('Tracking number is required for shipping');
+    }
+
+    this._status = this._status.ship();
+    this._trackingNumber = trackingNumber;
+    this._updatedAt = new Date();
+
+    this.apply(
+      new OrderShippedEvent(
+        this._id.getValue(),
+        this._trackingNumber,
+        this._customerId.toString(),
       ),
     );
   }
