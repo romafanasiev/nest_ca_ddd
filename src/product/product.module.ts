@@ -27,5 +27,6 @@ import { ProductsController } from './presentation/product.controller';
       inject: [ConfigService, MongoProductRepository, DrizzleProductRepository],
     },
   ],
+  exports: [PRODUCT_REPOSITORY],
 })
 export class ProductModule {}

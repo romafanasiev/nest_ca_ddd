@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { and, eq, notInArray, sql, type SQL } from 'drizzle-orm';
+import { OrderRepositoryPort } from 'src/order/application/ports/order.repository.port';
 import { Order } from 'src/order/domain/entities/order.entity';
-import { OrderRepositoryPort } from 'src/order/domain/ports/order.repository.port';
 import { OrderId } from 'src/order/domain/value-objects/order-id.vo';
 import { DrizzleOrderItemMapper } from 'src/order/infrastructure/mappers/drizzle-order-item.mapper';
 import { DrizzleOrderMapper } from 'src/order/infrastructure/mappers/drizzle-order.mapper';

@@ -1,14 +1,20 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
-import { OrderItem } from 'src/order/domain/entities/order-item.entity';
-import { Order } from 'src/order/domain/entities/order.entity';
 import {
   ORDER_REPOSITORY,
   type OrderRepositoryPort,
-} from 'src/order/domain/ports/order.repository.port';
+} from 'src/order/application/ports/order.repository.port';
+import { OrderItem } from 'src/order/domain/entities/order-item.entity';
+import { Order } from 'src/order/domain/entities/order.entity';
 import { ProductId } from 'src/order/domain/value-objects/product-id.vo';
 import { ShippingAddress } from 'src/order/domain/value-objects/shipping-address.vo';
+import {
+  ApplicationException,
+  ApplicationExceptionCode,
+} from 'src/shared/domain/exceptions/application.exception';
 import { Money } from 'src/shared/domain/value-objects/money.vo';
+import { CUSTOMER, type CustomerPort } from '../../ports/customer.port';
+import { PRODUCT, type ProductPort } from '../../ports/product.port';
 import { PlaceOrderCommand } from './place-order.command';
 
 @CommandHandler(PlaceOrderCommand)
@@ -16,9 +22,33 @@ export class PlaceOrderHandler implements ICommandHandler<PlaceOrderCommand> {
   constructor(
     @Inject(ORDER_REPOSITORY)
     private readonly orderRepository: OrderRepositoryPort,
+    @Inject(CUSTOMER)
+    private readonly customer: CustomerPort,
+    @Inject(PRODUCT)
+    private readonly product: ProductPort,
   ) {}
 
   async execute(command: PlaceOrderCommand): Promise<void> {
+    const customerExists = await this.customer.exists(command.customerId);
+
+    if (!customerExists) {
+      throw new ApplicationException(
+        `Customer with id ${command.customerId} not found`,
+        ApplicationExceptionCode.NOT_FOUND,
+      );
+    }
+
+    for (const item of command.items) {
+      const productExists = await this.product.exists(item.productId);
+
+      if (!productExists) {
+        throw new ApplicationException(
+          `Product with id ${item.productId} not found`,
+          ApplicationExceptionCode.NOT_FOUND,
+        );
+      }
+    }
+
     const items = command.items.map((item) =>
       OrderItem.create({
         productId: new ProductId(item.productId),
