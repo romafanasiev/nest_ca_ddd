@@ -41,16 +41,18 @@ export class OrderItem extends Entity<OrderItemId> {
     productName,
     unitPrice,
     quantity,
+    discount,
   }: {
     productId: ProductId;
     productName: string;
     unitPrice: Money;
     quantity: number;
+    discount?: Money;
   }): OrderItem {
     OrderItem.assertProductName(productName);
     OrderItem.assertQuantity(quantity);
 
-    return new OrderItem({
+    const item = new OrderItem({
       id: new OrderItemId(),
       productId,
       productName: productName.trim(),
@@ -58,6 +60,12 @@ export class OrderItem extends Entity<OrderItemId> {
       quantity,
       discount: null,
     });
+
+    if (discount) {
+      item.applyDiscount(discount);
+    }
+
+    return item;
   }
 
   static reconstitute(props: OrderItemProps): OrderItem {
