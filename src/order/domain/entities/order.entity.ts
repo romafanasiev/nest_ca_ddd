@@ -1,6 +1,7 @@
 import { DomainException } from 'src/shared/domain/exceptions/domain.exception';
 import { Money } from 'src/shared/domain/value-objects/money.vo';
 import { AggregateRoot } from '../../../shared/domain/aggregate-root';
+import { OrderConfirmedEvent } from '../events/order-confirmed.event';
 import { OrderPlacedEvent } from '../events/order-placed.event';
 import { OrderId } from '../value-objects/order-id.vo';
 import { OrderStatus } from '../value-objects/order-status.vo';
@@ -139,5 +140,18 @@ export class Order extends AggregateRoot {
 
   getItemCount(): number {
     return this._items.reduce((sum, item) => sum + item.quantity, 0);
+  }
+
+  confirm(): void {
+    this._status = this._status.confirm();
+    this._updatedAt = new Date();
+
+    this.apply(
+      new OrderConfirmedEvent(
+        this._id.getValue(),
+        this.customerId,
+        this._shippingAddress,
+      ),
+    );
   }
 }
