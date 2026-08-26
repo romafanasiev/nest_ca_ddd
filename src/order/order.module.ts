@@ -6,6 +6,7 @@ import { EventHandlers } from './application/events';
 import { CUSTOMER } from './application/ports/customer.port';
 import { ORDER_REPOSITORY } from './application/ports/order.repository.port';
 import { PRODUCT } from './application/ports/product.port';
+import { QueryHandlers } from './application/queries/handlers';
 import { CustomerAdapter } from './infrastructure/adapters/customer.adapter';
 import { DrizzleOrderRepository } from './infrastructure/adapters/drizzle-order.repository';
 import { ProductAdapter } from './infrastructure/adapters/product.adapter';
@@ -17,6 +18,7 @@ import { OrderController } from './presentation/order.controller';
   providers: [
     ...CommandHandlers,
     ...EventHandlers,
+    ...QueryHandlers,
     { provide: ORDER_REPOSITORY, useClass: DrizzleOrderRepository },
     { provide: CUSTOMER, useClass: CustomerAdapter },
     { provide: PRODUCT, useClass: ProductAdapter },
