@@ -91,4 +91,19 @@ export class Payment extends AggregateRoot {
   get updatedAt(): Date {
     return this._updatedAt;
   }
+
+  isSucceeded(): boolean {
+    return this.status.isSucceeded();
+  }
+
+  startCheckout() {
+    if (this.isSucceeded()) {
+      throw new DomainException(
+        `Cannot start checkout for a payment in ${this._status.getValue()} status`,
+      );
+    }
+
+    this._status = PaymentStatus.processing();
+    this._updatedAt = new Date();
+  }
 }

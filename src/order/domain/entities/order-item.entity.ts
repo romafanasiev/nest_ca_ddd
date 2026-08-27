@@ -151,4 +151,13 @@ export class OrderItem extends Entity<OrderItemId> {
       );
     }
   }
+
+  getEffectiveUnitPrice(): Money {
+    const subtotal = this.subtotal;
+
+    return Money.fromCents(
+      Math.round(subtotal.getAmount() / this.quantity),
+      subtotal.getCurrency(),
+    );
+  }
 }

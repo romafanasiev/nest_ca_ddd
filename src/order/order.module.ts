@@ -23,5 +23,6 @@ import { OrderController } from './presentation/order.controller';
     { provide: CUSTOMER, useClass: CustomerAdapter },
     { provide: PRODUCT, useClass: ProductAdapter },
   ],
+  exports: [ORDER_REPOSITORY],
 })
 export class OrderModule {}
