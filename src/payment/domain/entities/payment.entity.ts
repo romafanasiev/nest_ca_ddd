@@ -76,6 +76,10 @@ export class Payment extends AggregateRoot {
     return this._status;
   }
 
+  get orderId(): string {
+    return this._orderId;
+  }
+
   get gatewayTransactionId(): string | null {
     return this._gatewayTransactionId;
   }
