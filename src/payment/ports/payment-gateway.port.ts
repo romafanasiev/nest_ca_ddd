@@ -1,5 +1,7 @@
 import { Money } from 'src/shared/domain/value-objects/money.vo';
 
+export const PAYMENT_GATEWAY = Symbol('PAYMENT_GATEWAY');
+
 export interface CreateCheckoutSessionResult {
   url: string;
   sessionId: string;
@@ -10,10 +12,16 @@ export interface CheckoutUrls {
   cancelUrl?: string;
 }
 
+export interface CheckoutLineItem {
+  name: string;
+  unitAmount: Money;
+  quantity: number;
+}
+
 export interface PaymentGatewayPort {
   createCheckoutSession(
-    amount: Money,
-    metadate: { orderId: string; paymentId: string },
+    lines: CheckoutLineItem[],
+    metadata: { orderId: string; paymentId: string },
     urls?: CheckoutUrls,
   ): Promise<CreateCheckoutSessionResult>;
 
