@@ -6,4 +6,5 @@ export {
   ordersRelations,
   orderStatusEnum,
 } from './orders.schema';
+export { payments, paymentStatusEnum } from './payments.schema';
 export { products } from './product.schema';
