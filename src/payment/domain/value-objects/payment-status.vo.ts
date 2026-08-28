@@ -43,4 +43,16 @@ export class PaymentStatus {
   isSucceeded(): boolean {
     return this.getValue() === PaymentStatusValue.Succeeded;
   }
+
+  isProcessing(): boolean {
+    return this.value === PaymentStatusValue.Processing;
+  }
+
+  transitionToSucceeded(): PaymentStatus {
+    if (!this.isProcessing()) {
+      throw new DomainException('Cannot transition to succeeded ');
+    }
+
+    return PaymentStatus.succeeded();
+  }
 }

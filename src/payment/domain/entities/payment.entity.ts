@@ -1,6 +1,7 @@
 import { AggregateRoot } from '@nestjs/cqrs';
 import { DomainException } from 'src/shared/domain/exceptions/domain.exception';
 import { Money } from 'src/shared/domain/value-objects/money.vo';
+import { PaymentCompletedEvent } from '../events/payment-completed.event';
 import { PaymentId } from '../value-objects/payment-id.vo';
 import { PaymentStatus } from '../value-objects/payment-status.vo';
 
@@ -105,5 +106,19 @@ export class Payment extends AggregateRoot {
 
     this._status = PaymentStatus.processing();
     this._updatedAt = new Date();
+  }
+
+  complete(gatewayTransactionId: string) {
+    this._gatewayTransactionId = gatewayTransactionId;
+    this._status = this._status.transitionToSucceeded();
+    this._updatedAt = new Date();
+
+    this.apply(
+      new PaymentCompletedEvent(
+        this._id.getValue(),
+        this._orderId,
+        this._gatewayTransactionId,
+      ),
+    );
   }
 }
